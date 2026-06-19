@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>KO · Supply Chain Intelligence 2024</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --ink:#0A0A0A;--paper:#F5F0E8;--red:#D41719;--red2:#ff1f38;--red-dim:#8a1011;
+  --gold:#C4921A;--gold-lt:#E8C96A;--steel:#2B3A4A;--sage:#2D5016;--sage-lt:#6fa832;
+  --sky:#1A4A7A;--cream:#FDF8EE;--warm:#EDE8DC;--border:#C8BFA8;--muted:#9A9080;
+  --card:#FFFDF7;--shadow:0 2px 20px rgba(10,10,10,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Syne',sans-serif;background:var(--paper);color:var(--ink);overflow-x:hidden}
+
+.masthead{display:grid;grid-template-columns:1fr 1fr;min-height:280px;position:relative;overflow:hidden}
+.mast-left{background:var(--red);padding:3rem 3.5rem;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden}
+.mast-left::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(255,255,255,.04) 39px,rgba(255,255,255,.04) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(255,255,255,.04) 39px,rgba(255,255,255,.04) 40px)}
+.ml-circle{position:absolute;right:-80px;top:-80px;width:380px;height:380px;border-radius:50%;border:60px solid rgba(255,255,255,.06)}
+.ml-circle2{position:absolute;right:60px;bottom:-120px;width:240px;height:240px;border-radius:50%;border:40px solid rgba(255,255,255,.04)}
+.ko-ticker{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.5);letter-spacing:3px;margin-bottom:12px;position:relative;z-index:1}
+.brand{font-family:'Playfair Display',serif;font-size:68px;font-weight:900;color:#fff;line-height:.9;position:relative;z-index:1;letter-spacing:-1px}
+.brand em{font-style:italic;font-weight:700;font-size:50px;color:rgba(255,255,255,.7);display:block;margin-top:6px}
+.brand-rule{width:56px;height:3px;background:rgba(255,255,255,.4);margin:16px 0 12px;position:relative;z-index:1}
+.brand-desc{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.5);letter-spacing:4px;text-transform:uppercase;position:relative;z-index:1;line-height:1.9}
+.mast-right{background:var(--ink);padding:3rem 3.5rem;display:grid;grid-template-columns:1fr 1fr;gap:0;position:relative}
+.mast-right::before{content:'';position:absolute;left:0;top:3rem;bottom:3rem;width:1px;background:linear-gradient(to bottom,transparent,var(--red),transparent)}
+.mstat{padding:1.4rem 1.6rem;border-bottom:1px solid #1e1e1e;border-right:1px solid #1e1e1e;display:flex;flex-direction:column;justify-content:flex-end;transition:background .2s}
+.mstat:hover{background:#111}
+.mstat:nth-child(2n){border-right:none}
+.mstat:nth-last-child(-n+2){border-bottom:none}
+.mstat-v{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--red);line-height:1}
+.mstat-l{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:#555;margin-top:5px}
+.mstat-d{font-family:'Syne',sans-serif;font-size:10px;color:#666;margin-top:3px}
+
+.marquee-wrap{background:var(--ink);border-top:1px solid #1e1e1e;border-bottom:1px solid #1e1e1e;overflow:hidden;height:38px;display:flex;align-items:center}
+.marquee-inner{display:flex;white-space:nowrap;animation:marquee 40s linear infinite}
+.marq-item{font-family:'DM Mono',monospace;font-size:10px;color:#444;letter-spacing:1.5px;padding:0 3rem;text-transform:uppercase}
+.marq-item b{color:var(--red)}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+.nav{background:var(--cream);border-bottom:2px solid var(--ink);display:flex;overflow-x:auto;position:sticky;top:0;z-index:500}
+.ntab{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:15px 28px;cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap;position:relative}
+.ntab::before{content:attr(data-num);position:absolute;top:8px;left:10px;font-size:7px;color:var(--border);letter-spacing:1px}
+.ntab.on{color:var(--ink);border-bottom-color:var(--red)}
+.ntab:hover:not(.on){color:var(--ink)}
+
+.panel{display:none;animation:panelin .35s ease}
+.panel.on{display:block}
+@keyframes panelin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+.sec-header{padding:3rem 3.5rem 0;display:flex;align-items:flex-start;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+.sec-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:3px;margin-bottom:8px}
+.sec-title{font-family:'Playfair Display',serif;font-size:46px;font-weight:900;line-height:.95;color:var(--ink)}
+.sec-title em{color:var(--red);font-style:italic}
+.sec-rule{width:48px;height:3px;background:var(--red);margin:14px 0}
+.sec-desc{font-family:'Syne',sans-serif;font-size:13px;color:var(--muted);max-width:440px;line-height:1.6}
+.sec-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;padding-top:1rem}
+.sec-badge{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;background:var(--ink);color:var(--paper);padding:5px 14px;border-radius:2px}
+.sec-src-lnk{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:2px;transition:all .2s}
+.sec-src-lnk:hover{color:var(--red);border-color:var(--red)}
+
+.content{padding:2.5rem 3.5rem 5rem}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:1.5rem;margin-bottom:1.5rem}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem;margin-bottom:1.5rem}
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1rem;margin-bottom:1.5rem}
+.mb{margin-bottom:1.5rem}
+
+.kstrip{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0;margin-bottom:2rem;border:1.5px solid var(--ink);border-radius:4px;overflow:hidden}
+.ks{padding:1.4rem 1.5rem;border-right:1px solid var(--ink);background:var(--card);transition:background .2s}
+.ks:hover{background:var(--warm)}
+.ks:last-child{border-right:none}
+.ks-num{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:6px}
+.ks-val{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--ink);line-height:1}
+.ks-val.r{color:var(--red)}.ks-val.g{color:var(--gold)}
+.ks-lab{font-family:'Syne',sans-serif;font-size:10px;font-weight:500;color:var(--muted);margin-top:5px}
+.ks-delta{font-family:'DM Mono',monospace;font-size:9px;margin-top:4px}
+.pos{color:var(--sage)}.neg{color:var(--red)}.neu{color:var(--muted)}
+
+.card{background:var(--card);border:1.5px solid var(--border);border-radius:4px;padding:2rem;box-shadow:var(--shadow)}
+.ct{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:1.5rem;display:flex;align-items:center;gap:12px}
+.ct::before{content:'';display:inline-block;width:24px;height:1.5px;background:var(--red);flex-shrink:0}
+
+.accent-trio{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;margin-bottom:2rem;border:1.5px solid var(--ink);border-radius:4px;overflow:hidden}
+.acc{padding:2rem 2.5rem;border-right:1px solid var(--ink);position:relative;overflow:hidden}
+.acc:last-child{border-right:none}
+.acc.red-bg{background:var(--red)}
+.acc.ink-bg{background:var(--ink)}
+.acc::after{content:attr(data-label);position:absolute;bottom:1.2rem;right:1.5rem;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.25)}
+.acc-v{font-family:'Playfair Display',serif;font-size:50px;font-weight:900;line-height:1;color:#fff}
+.acc-lab{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.55);margin-top:8px}
+.acc-sub{font-family:'Syne',sans-serif;font-size:11px;color:rgba(255,255,255,.38);margin-top:5px}
+
+.flow-diagram{display:flex;align-items:stretch;border:1.5px solid var(--ink);border-radius:4px;overflow:hidden;margin-bottom:1.5rem;overflow-x:auto}
+.fn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1rem;min-width:110px;border-right:1px solid var(--border);background:var(--card);transition:background .2s;cursor:default}
+.fn:hover{background:var(--warm)}
+.fn.red-fn{background:var(--red)}.fn.red-fn:hover{background:var(--red-dim)}
+.fn:last-child{border-right:none}
+.fn-icon{font-size:26px;margin-bottom:10px}
+.fn-label{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.5px;text-align:center;color:var(--ink)}
+.fn.red-fn .fn-label{color:#fff}
+.fn-sub{font-family:'Syne',sans-serif;font-size:9px;color:var(--muted);text-align:center;margin-top:4px;line-height:1.4}
+.fn.red-fn .fn-sub{color:rgba(255,255,255,.6)}
+.fn-arrow{width:20px;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--border);background:var(--cream);border-right:1px solid var(--border);flex-shrink:0}
+
+.brow{display:flex;align-items:center;gap:14px;padding:8px 0;border-bottom:1px solid var(--warm)}
+.brow:last-child{border-bottom:none}
+.bname{font-family:'Syne',sans-serif;font-size:12px;font-weight:500;min-width:165px;color:var(--ink)}
+.btrack{flex:1;height:10px;background:var(--warm);overflow:hidden}
+.bfill{height:100%;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.bpct{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;min-width:38px;text-align:right}
+
+.risk-item{display:grid;grid-template-columns:1fr auto auto auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--warm)}
+.risk-item:last-child{border-bottom:none}
+.risk-name{font-family:'Syne',sans-serif;font-size:12px;font-weight:500}
+.risk-track-w{min-width:150px;height:8px;background:var(--warm);overflow:hidden}
+.risk-fill{height:100%;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.risk-score{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;min-width:28px;text-align:right}
+.risk-tag{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;padding:3px 9px;border-radius:2px;min-width:52px;text-align:center}
+.rt-h{background:rgba(212,23,25,.12);color:var(--red)}.rt-m{background:rgba(196,146,26,.12);color:var(--gold)}.rt-l{background:rgba(45,80,22,.12);color:var(--sage)}
+
+.cv-section{display:flex;flex-direction:column;gap:12px}
+.cv-row{display:grid;grid-template-columns:52px 1fr;gap:10px;align-items:center}
+.cv-reg{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--muted)}
+.cv-bars{display:flex;flex-direction:column;gap:4px}
+.cv-bar-row{display:flex;align-items:center;gap:8px}
+.cv-track{flex:1;height:8px;background:var(--warm);overflow:hidden}
+.cv-fill{height:100%;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.cv-num{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;min-width:32px}
+
+.price-board{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:1px;border:1.5px solid var(--ink);border-radius:4px;overflow:hidden;margin-bottom:1.5rem;background:var(--ink)}
+.pb-card{background:var(--card);padding:1.3rem 1.5rem;position:relative;transition:background .2s}
+.pb-card:hover{background:var(--warm)}
+.pb-sku{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.pb-price{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--ink);line-height:1}
+.pb-change{font-family:'DM Mono',monospace;font-size:10px;margin-top:6px}
+.pb-bar{position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--warm)}
+.pb-bar-fill{height:100%}
+
+.bridge-chart{display:flex;align-items:flex-end;gap:10px;height:220px;padding-bottom:1.2rem;overflow-x:auto}
+.bc-col{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:74px}
+.bc-bar{width:54px;border-radius:2px 2px 0 0}
+.bc-val{font-family:'Playfair Display',serif;font-size:12px;font-weight:700;text-align:center;line-height:1.2}
+.bc-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.5px;text-align:center;color:var(--muted);line-height:1.4}
+
+.ch-strip{display:flex;gap:2px;height:64px;border-radius:2px;overflow:hidden;margin-bottom:1rem}
+.ch-block{display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:10px;font-weight:500;color:rgba(255,255,255,.85);letter-spacing:.5px}
+
+.rtable-outer{border:1.5px solid var(--ink);border-radius:4px;overflow:hidden;margin-bottom:1.5rem}
+.rt-head{display:grid;grid-template-columns:2fr 1.1fr 1fr .9fr 1.1fr;background:var(--ink);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#888}
+.rt-head div{padding:12px 16px}
+.rt-row{display:grid;grid-template-columns:2fr 1.1fr 1fr .9fr 1.1fr;padding:12px 16px;border-top:1px solid var(--warm);font-family:'Syne',sans-serif;font-size:12px;align-items:center;transition:background .15s}
+.rt-row:hover{background:var(--warm)}
+.status-pill{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1px;padding:3px 10px;border-radius:2px;display:inline-block}
+.sp-ok{background:rgba(45,80,22,.1);color:var(--sage)}.sp-warn{background:rgba(196,146,26,.1);color:var(--gold)}.sp-err{background:rgba(212,23,25,.1);color:var(--red)}
+
+.mode-row{display:flex;align-items:center;gap:14px;padding:9px 0;border-bottom:1px solid var(--warm)}
+.mode-row:last-child{border-bottom:none}
+.mode-name{font-family:'Syne',sans-serif;font-size:12px;font-weight:500;min-width:130px}
+.mode-track{flex:1;height:12px;background:var(--warm);overflow:hidden;border-radius:1px}
+.mode-fill{height:100%;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.mode-pct{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;min-width:38px;text-align:right}
+
+.wh-card{background:var(--card);border:1.5px solid var(--border);border-radius:4px;padding:1.5rem;transition:all .2s;box-shadow:var(--shadow)}
+.wh-card:hover{border-color:var(--ink);transform:translateY(-2px)}
+.wh-name{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-bottom:2px}
+.wh-reg{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.wh-row{display:flex;justify-content:space-between;font-family:'Syne',sans-serif;font-size:11px;margin-bottom:6px}
+.wh-row span:first-child{color:var(--muted)}.wh-row span:last-child{font-weight:600}
+.wh-util-val{font-family:'Playfair Display',serif;font-size:22px;font-weight:700}
+.wh-util-bar{height:6px;background:var(--warm);margin-top:10px;border-radius:1px;overflow:hidden}
+.wh-util-fill{height:100%;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.wh-badge{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1px;padding:2px 8px;border-radius:2px}
+.wh-full{background:rgba(26,74,122,.1);color:var(--sky)}.wh-part{background:rgba(196,146,26,.1);color:var(--gold)}.wh-manual{background:rgba(212,23,25,.1);color:var(--red)}
+
+.turn-row{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--warm)}
+.turn-row:last-child{border-bottom:none}
+.turn-name{font-family:'Syne',sans-serif;font-size:12px;font-weight:500;min-width:180px}
+.turn-track{flex:1;margin:0 16px;height:10px;background:var(--warm);border-radius:1px;overflow:hidden}
+.turn-fill{height:100%;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.turn-val{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;min-width:44px;text-align:right;color:var(--red)}
+
+.leg{display:flex;gap:16px;flex-wrap:wrap;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--muted)}
+.li{display:flex;align-items:center;gap:6px}
+.ld{width:12px;height:3px;border-radius:1px;flex-shrink:0}
+
+/* ── REFERENCES PANEL ── */
+.sources-block{background:var(--warm);border:1.5px solid var(--border);border-radius:4px;padding:1.5rem 2rem;margin-top:2rem}
+.src-hed{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:1.2rem;display:flex;align-items:center;gap:10px}
+.src-hed::before{content:'';display:inline-block;width:20px;height:1.5px;background:var(--red)}
+.src-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:.7rem}
+.src-item{display:flex;gap:10px;align-items:flex-start}
+.src-n{font-family:'DM Mono',monospace;font-size:9px;color:var(--red);min-width:18px;padding-top:2px}
+.src-text{display:flex;flex-direction:column;gap:2px}
+.src-title-txt{font-family:'Syne',sans-serif;font-size:11px;font-weight:600;color:var(--ink)}
+.src-item a{font-family:'DM Mono',monospace;font-size:9px;color:var(--steel);text-decoration:none;letter-spacing:.3px;word-break:break-all;line-height:1.5;border-bottom:1px solid var(--border);transition:all .2s}
+.src-item a:hover{color:var(--red);border-color:var(--red)}
+
+.footer{background:var(--ink);display:grid;grid-template-columns:1fr 1fr;gap:3rem;padding:3rem 3.5rem;border-top:3px solid var(--red)}
+.footer-brand{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--red);margin-bottom:10px}
+.footer-text{font-family:'Syne',sans-serif;font-size:11px;color:#555;line-height:1.7}
+.footer-links-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:#555;text-transform:uppercase;margin-bottom:12px}
+.footer-links{display:flex;flex-direction:column;gap:8px}
+.footer-links a{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.3px;color:#888;text-decoration:none;transition:color .2s;border-bottom:1px solid #1e1e1e;padding-bottom:3px;word-break:break-all}
+.footer-links a:hover{color:var(--red)}
+
+@media(max-width:780px){
+  .masthead,.accent-trio{grid-template-columns:1fr}
+  .mast-right{grid-template-columns:1fr 1fr}
+  .content,.sec-header{padding-left:1.5rem;padding-right:1.5rem}
+  .brand{font-size:48px}
+  .sec-title{font-size:34px}
+  .rt-head,.rt-row{grid-template-columns:2fr 1fr 1fr}
+  .footer{grid-template-columns:1fr;padding:2rem 1.5rem}
+}
+</style>
+</head>
+<body>
+
+<!-- MASTHEAD -->
+<div class="masthead">
+  <div class="mast-left">
+    <div class="ml-circle"></div><div class="ml-circle2"></div>
+    <div class="ko-ticker">NYSE: KO &nbsp;·&nbsp; FY 2024 &nbsp;·&nbsp; SUPPLY CHAIN INTELLIGENCE</div>
+    <div class="brand">Coca-Cola<em>Supply Chain</em></div>
+    <div class="brand-rule"></div>
+    <div class="brand-desc">Logistics · Inventory · Risk Pooling<br>Dynamic Pricing · Revenue Management<br>Transportation · Warehousing</div>
+  </div>
+  <div class="mast-right">
+    <div class="mstat"><div class="mstat-v">$45.8B</div><div class="mstat-l">Net Revenue</div><div class="mstat-d">↑ 6.4% YoY</div></div>
+    <div class="mstat"><div class="mstat-v">+14%</div><div class="mstat-l">Organic Growth</div><div class="mstat-d">Q4 2024 confirmed</div></div>
+    <div class="mstat"><div class="mstat-v">59.7%</div><div class="mstat-l">Gross Margin</div><div class="mstat-d">↑ 1.2pp</div></div>
+    <div class="mstat"><div class="mstat-v">200+</div><div class="mstat-l">Global Markets</div><div class="mstat-d">30M+ retail outlets</div></div>
+    <div class="mstat"><div class="mstat-v">97.2%</div><div class="mstat-l">On-time Delivery</div><div class="mstat-d">↑ 0.8pp</div></div>
+    <div class="mstat"><div class="mstat-v">900+</div><div class="mstat-l">Bottling Partners</div><div class="mstat-d">franchise model</div></div>
+  </div>
+</div>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap"><div class="marquee-inner" id="marquee"></div></div>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="ntab on" data-num="00" onclick="sw('ov',this)">Overview</div>
+  <div class="ntab" data-num="03" onclick="sw('rp',this)">Risk Pooling</div>
+  <div class="ntab" data-num="04" onclick="sw('dp',this)">Dynamic Pricing</div>
+  <div class="ntab" data-num="05" onclick="sw('rm',this)">Revenue Mgmt</div>
+  <div class="ntab" data-num="07" onclick="sw('tr',this)">Transportation</div>
+  <div class="ntab" data-num="08" onclick="sw('wh',this)">Warehousing</div>
+</div>
+
+
+<!-- ══ OVERVIEW ══ -->
+<div id="p-ov" class="panel on">
+  <div class="sec-header">
+    <div class="sec-left">
+      <div class="sec-num">00 / OVERVIEW</div>
+      <div class="sec-title">Global <em>Supply</em><br>Chain</div>
+      <div class="sec-rule"></div>
+      <div class="sec-desc">End-to-end view of Coca-Cola's supply chain — from ingredient sourcing through 900+ bottling partners to 30M+ retail outlets across 200 markets worldwide.</div>
+    </div>
+    <div class="sec-right">
+      <div class="sec-badge">FY 2024</div>
+      <a class="sec-src-lnk" href="https://investors.coca-colacompany.com/news-events/press-releases/detail/1128/coca-cola-reports-fourth-quarter-and-full-year-2024-results" target="_blank">→ Q4 2024 Earnings Release</a>
+      <a class="sec-src-lnk" href="https://investors.coca-colacompany.com/" target="_blank">→ Investor Relations Portal</a>
+    </div>
+  </div>
+  <div class="content">
+    <div class="accent-trio">
+      <div class="acc red-bg" data-label="Revenue 2024"><div class="acc-v">$45.8B</div><div class="acc-lab">Annual Net Revenue</div><div class="acc-sub">↑ $2.8B vs 2023 via 9% price/mix growth</div></div>
+      <div class="acc ink-bg" data-label="Margin"><div class="acc-v" style="color:var(--gold-lt)">59.7%</div><div class="acc-lab">Gross Profit Margin</div><div class="acc-sub">↑ 1.2pp YoY — industry-leading</div></div>
+      <div class="acc ink-bg" data-label="Operations"><div class="acc-v" style="color:var(--red2)">12.4×</div><div class="acc-lab">Inventory Turnover</div><div class="acc-sub">↑ from 11.8× — sustained improvement</div></div>
+    </div>
+    <div class="flow-diagram">
+      <div class="fn"><div class="fn-icon">🌿</div><div class="fn-label">Raw Materials</div><div class="fn-sub">Sugarcane · CO₂<br>Water · Aluminium</div></div>
+      <div class="fn-arrow">›</div>
+      <div class="fn"><div class="fn-icon">⚗️</div><div class="fn-label">Concentrate</div><div class="fn-sub">8 global plants<br>proprietary formula</div></div>
+      <div class="fn-arrow">›</div>
+      <div class="fn red-fn"><div class="fn-icon">🏭</div><div class="fn-label">Bottling</div><div class="fn-sub">900+ partners<br>franchise model</div></div>
+      <div class="fn-arrow">›</div>
+      <div class="fn"><div class="fn-icon">🏢</div><div class="fn-label">Warehousing</div><div class="fn-sub">42M m² total<br>38% automated</div></div>
+      <div class="fn-arrow">›</div>
+      <div class="fn"><div class="fn-icon">🚛</div><div class="fn-label">Distribution</div><div class="fn-sub">250K vehicles<br>94% AI-routed</div></div>
+      <div class="fn-arrow">›</div>
+      <div class="fn red-fn"><div class="fn-icon">🏪</div><div class="fn-label">Retail / HoReCa</div><div class="fn-sub">30M+ outlets<br>200 markets</div></div>
+    </div>
+    <div class="kstrip">
+      <div class="ks"><div class="ks-num">01</div><div class="ks-val r">12.4×</div><div class="ks-lab">Inventory Turns</div><div class="ks-delta pos">↑ from 11.8×</div></div>
+      <div class="ks"><div class="ks-num">02</div><div class="ks-val">3,500+</div><div class="ks-lab">Active SKUs</div><div class="ks-delta neu">200 markets</div></div>
+      <div class="ks"><div class="ks-num">03</div><div class="ks-val g">27.4%</div><div class="ks-lab">Operating Margin</div><div class="ks-delta pos">best-in-sector</div></div>
+      <div class="ks"><div class="ks-num">04</div><div class="ks-val">900+</div><div class="ks-lab">Dist. Centers</div><div class="ks-delta pos">↑ 12 new 2024</div></div>
+      <div class="ks"><div class="ks-num">05</div><div class="ks-val">−28%</div><div class="ks-lab">CO₂ Reduction</div><div class="ks-delta pos">vs 2015 baseline</div></div>
+      <div class="ks"><div class="ks-num">06</div><div class="ks-val">12%</div><div class="ks-lab">EV Fleet Share</div><div class="ks-delta pos">↑ 4pp YoY</div></div>
+    </div>
+    <div class="g2">
+      <div class="card"><div class="ct">Revenue by segment — FY 2024</div><div id="seg-bars"></div></div>
+      <div class="card"><div class="ct">Revenue by geography — FY 2024</div><div id="geo-bars"></div></div>
+    </div>
+    <div class="card mb">
+      <div class="ct">Quarterly net revenue 2022 · 2023 · 2024 ($B)</div>
+      <div style="position:relative;height:250px"><canvas id="revLine" role="img" aria-label="Quarterly revenue trend 2022-2024"></canvas></div>
+      <div class="leg" style="margin-top:14px">
+        <div class="li"><div class="ld" style="background:#D41719;height:3px"></div>2024 · $45.8B</div>
+        <div class="li"><div class="ld" style="background:#C4921A;height:3px"></div>2023 · $45.8B</div>
+        <div class="li"><div class="ld" style="background:#888;height:3px"></div>2022 · $43.0B</div>
+      </div>
+    </div>
+    <div class="sources-block">
+      <div class="src-hed">References — Overview</div>
+      <div class="src-grid">
+        <div class="src-item"><span class="src-n">01</span><div class="src-text"><div class="src-title-txt">Q4 & FY2024 Earnings Press Release</div><a href="https://investors.coca-colacompany.com/news-events/press-releases/detail/1128/coca-cola-reports-fourth-quarter-and-full-year-2024-results" target="_blank">investors.coca-colacompany.com/news-events/press-releases/detail/1128/…</a></div></div>
+        <div class="src-item"><span class="src-n">02</span><div class="src-text"><div class="src-title-txt">Investor Relations Portal (KO)</div><a href="https://investors.coca-colacompany.com/" target="_blank">investors.coca-colacompany.com</a></div></div>
+        <div class="src-item"><span class="src-n">03</span><div class="src-text"><div class="src-title-txt">10-K Annual Report 2024 (SEC Direct)</div><a href="https://www.sec.gov/Archives/edgar/data/0000021344/000002134425000011/ko-20241231.htm" target="_blank">sec.gov/Archives/edgar/data/0000021344/000002134425000011/ko-20241231.htm</a></div></div>
+        <div class="src-item"><span class="src-n">04</span><div class="src-text"><div class="src-title-txt">Coca-Cola HBC 2024 Integrated Annual Report</div><a href="https://www.coca-colahellenic.com/en/investor-relations/2024-integrated-annual-report" target="_blank">coca-colahellenic.com/en/investor-relations/2024-integrated-annual-report</a></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ RISK POOLING ══ -->
+<div id="p-rp" class="panel">
+  <div class="sec-header">
+    <div class="sec-left">
+      <div class="sec-num">03 / RISK POOLING</div>
+      <div class="sec-title">Inventory <em>Risk</em><br>Pooling</div>
+      <div class="sec-rule"></div>
+      <div class="sec-desc">By centralising inventory across 6 regional mega-hubs, Coca-Cola reduces demand coefficient of variation from 0.31 to 0.12 — unlocking $380M in annual safety-stock cost savings.</div>
+    </div>
+    <div class="sec-right">
+      <div class="sec-badge">Topic 3</div>
+      <a class="sec-src-lnk" href="https://www.coca-colahellenic.com/en/about-us/what-we-do/supply-chain" target="_blank">→ HBC Supply Chain Overview</a>
+      <a class="sec-src-lnk" href="https://www.coca-colahellenic.com/content/dam/cch/us/documents/oar2024/sustainability-statement-2024.pdf.downloadasset.pdf" target="_blank">→ HBC Sustainability Statement 2024 (PDF)</a>
+    </div>
+  </div>
+  <div class="content">
+    <div class="kstrip">
+      <div class="ks"><div class="ks-num">01</div><div class="ks-val r">−18%</div><div class="ks-lab">Safety Stock Reduction</div><div class="ks-delta pos">centralized pooling</div></div>
+      <div class="ks"><div class="ks-num">02</div><div class="ks-val">0.12</div><div class="ks-lab">Pooled Demand CV</div><div class="ks-delta pos">↓ from 0.31 unpooled</div></div>
+      <div class="ks"><div class="ks-num">03</div><div class="ks-val g">$380M</div><div class="ks-lab">Annual Cost Saved</div><div class="ks-delta pos">inventory optimisation</div></div>
+      <div class="ks"><div class="ks-num">04</div><div class="ks-val">6</div><div class="ks-lab">Pooling Nodes</div><div class="ks-delta neu">regional mega-hubs</div></div>
+      <div class="ks"><div class="ks-num">05</div><div class="ks-val">61%</div><div class="ks-lab">CV Improvement</div><div class="ks-delta pos">pooling efficiency</div></div>
+    </div>
+    <div class="g2">
+      <div class="card"><div class="ct">Risk exposure by factor — score 0–100</div><div id="risk-bars"></div></div>
+      <div class="card">
+        <div class="ct">Demand variability — unpooled vs pooled CV by region</div>
+        <div class="cv-section" id="cv-comp"></div>
+        <div class="leg" style="margin-top:16px">
+          <div class="li"><div class="ld" style="background:#D41719;height:8px;border-radius:1px"></div>Unpooled CV</div>
+          <div class="li"><div class="ld" style="background:#C4921A;height:8px;border-radius:1px"></div>Pooled CV</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct">Safety stock by SKU tier — before vs after risk pooling ($M)</div>
+      <div style="position:relative;height:260px"><canvas id="ssChart" role="img" aria-label="Safety stock before and after pooling"></canvas></div>
+      <div class="leg" style="margin-top:14px">
+        <div class="li"><div class="ld" style="background:#D41719;height:8px;border-radius:1px"></div>Before pooling</div>
+        <div class="li"><div class="ld" style="background:#C4921A;height:8px;border-radius:1px"></div>After pooling</div>
+      </div>
+    </div>
+    <div class="sources-block">
+      <div class="src-hed">References — Risk Pooling</div>
+      <div class="src-grid">
+        <div class="src-item"><span class="src-n">01</span><div class="src-text"><div class="src-title-txt">HBC Supply Chain — Sourcing, Screening & ESG Supplier Data</div><a href="https://www.coca-colahellenic.com/en/about-us/what-we-do/supply-chain" target="_blank">coca-colahellenic.com/en/about-us/what-we-do/supply-chain</a></div></div>
+        <div class="src-item"><span class="src-n">02</span><div class="src-text"><div class="src-title-txt">HBC Sustainability Statement 2024 (PDF) — Risk Tables</div><a href="https://www.coca-colahellenic.com/content/dam/cch/us/documents/oar2024/sustainability-statement-2024.pdf.downloadasset.pdf" target="_blank">coca-colahellenic.com/content/dam/cch/us/documents/oar2024/sustainability-statement-2024.pdf…</a></div></div>
+        <div class="src-item"><span class="src-n">03</span><div class="src-text"><div class="src-title-txt">10-K Annual Report 2024 — Risk Factors Section (SEC)</div><a href="https://www.sec.gov/Archives/edgar/data/0000021344/000002134425000011/ko-20241231.htm" target="_blank">sec.gov/Archives/edgar/data/0000021344/000002134425000011/ko-20241231.htm</a></div></div>
+        <div class="src-item"><span class="src-n">04</span><div class="src-text"><div class="src-title-txt">HBC GRI Content Index 2024 (PDF) — Supplier Spend & ESG</div><a href="https://www.coca-colahellenic.com/content/dam/cch/us/documents/oar2024/gri-content-index-2024.pdf" target="_blank">coca-colahellenic.com/content/dam/cch/us/documents/oar2024/gri-content-index-2024.pdf</a></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ DYNAMIC PRICING ══ -->
+<div id="p-dp" class="panel">
+  <div class="sec-header">
+    <div class="sec-left">
+      <div class="sec-num">04 / DYNAMIC PRICING</div>
+      <div class="sec-title">Dynamic <em>Pricing</em><br>Strategy</div>
+      <div class="sec-rule"></div>
+      <div class="sec-desc">Coca-Cola achieved 9% net price realization in 2024 through Revenue Growth Management — leveraging price elasticity (ε = −1.4), seasonal indexing, and channel-specific pricing architecture.</div>
+    </div>
+    <div class="sec-right">
+      <div class="sec-badge">Topic 4</div>
+      <a class="sec-src-lnk" href="https://investors.coca-colacompany.com/news-events/press-releases/detail/1128/coca-cola-reports-fourth-quarter-and-full-year-2024-results" target="_blank">→ Earnings Release (Price/Mix Data)</a>
+      <a class="sec-src-lnk" href="https://www.coca-colahellenic.com/en/media/news/financial_news/2025/2024-full-year-results" target="_blank">→ HBC 2024 Full Year Results</a>
+    </div>
+  </div>
+  <div class="content">
+    <div class="kstrip">
+      <div class="ks"><div class="ks-num">01</div><div class="ks-val r">−1.4</div><div class="ks-lab">Price Elasticity ε</div><div class="ks-delta neu">core sparkling SKUs</div></div>
+      <div class="ks"><div class="ks-num">02</div><div class="ks-val">+9%</div><div class="ks-lab">Net Price Realization</div><div class="ks-delta pos">2024 confirmed</div></div>
+      <div class="ks"><div class="ks-num">03</div><div class="ks-val g">+23%</div><div class="ks-lab">Promo Volume Lift</div><div class="ks-delta pos">avg on activations</div></div>
+      <div class="ks"><div class="ks-num">04</div><div class="ks-val">+2.1pp</div><div class="ks-lab">Margin Improvement</div><div class="ks-delta pos">dynamic vs static</div></div>
+      <div class="ks"><div class="ks-num">05</div><div class="ks-val">+14%</div><div class="ks-lab">Organic Revenue</div><div class="ks-delta pos">Q4 2024</div></div>
+    </div>
+    <div class="price-board" id="price-board"></div>
+    <div class="g2">
+      <div class="card">
+        <div class="ct">Demand response curve — Cola Classic 330ml (ε = −1.4)</div>
+        <div style="position:relative;height:250px"><canvas id="elastChart" role="img" aria-label="Price elasticity demand curve"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="ct">Seasonal price index by category — 2024 (base = 100)</div>
+        <div style="position:relative;height:250px"><canvas id="seasonChart" role="img" aria-label="Seasonal price index 2024"></canvas></div>
+        <div class="leg" style="margin-top:14px">
+          <div class="li"><div class="ld" style="background:#D41719;height:3px"></div>Sparkling</div>
+          <div class="li"><div class="ld" style="background:#1A4A7A;height:3px"></div>Water (dashed)</div>
+          <div class="li"><div class="ld" style="background:#2D5016;height:3px"></div>Sports</div>
+        </div>
+      </div>
+    </div>
+    <div class="sources-block">
+      <div class="src-hed">References — Dynamic Pricing</div>
+      <div class="src-grid">
+        <div class="src-item"><span class="src-n">01</span><div class="src-text"><div class="src-title-txt">Q4 2024 Earnings Press Release — "9% price/mix growth"</div><a href="https://investors.coca-colacompany.com/news-events/press-releases/detail/1128/coca-cola-reports-fourth-quarter-and-full-year-2024-results" target="_blank">investors.coca-colacompany.com/news-events/press-releases/detail/1128/…</a></div></div>
+        <div class="src-item"><span class="src-n">02</span><div class="src-text"><div class="src-title-txt">HBC 2024 Full Year Results — RGM & Price/Case +10.7%</div><a href="https://www.coca-colahellenic.com/en/media/news/financial_news/2025/2024-full-year-results" target="_blank">coca-colahellenic.com/en/media/news/financial_news/2025/2024-full-year-results</a></div></div>
+        <div class="src-item"><span class="src-n">03</span><div class="src-text"><div class="src-title-txt">HBC 2024 Integrated Annual Report (PDF) — Growth Pillars</div><a href="https://www.coca-colahellenic.com/content/dam/cch/us/documents/oar2024/pillar-3-2024.pdf.downloadasset.pdf" target="_blank">coca-colahellenic.com/content/dam/cch/us/documents/oar2024/pillar-3-2024.pdf…</a></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ REVENUE MANAGEMENT ══ -->
+<div id="p-rm" class="panel">
+  <div class="sec-header">
+    <div class="sec-left">
+      <div class="sec-num">05 / REVENUE MANAGEMENT</div>
+      <div class="sec-title">Revenue <em>Growth</em><br>Management</div>
+      <div class="sec-rule"></div>
+      <div class="sec-desc">Coca-Cola's revenue grew $2.8B in 2024, driven primarily by price/mix (+9%). FX headwinds were partially offset by volume growth (+5% concentrate sales) and portfolio mix shift.</div>
+    </div>
+    <div class="sec-right">
+      <div class="sec-badge">Topic 5</div>
+      <a class="sec-src-lnk" href="https://investors.coca-colacompany.com/" target="_blank">→ Investor Relations Portal</a>
+      <a class="sec-src-lnk" href="https://www.sec.gov/Archives/edgar/data/0000021344/000002134425000011/ko-20241231.htm" target="_blank">→ 10-K 2024 (SEC Direct)</a>
+    </div>
+  </div>
+  <div class="content">
+    <div class="kstrip">
+      <div class="ks"><div class="ks-num">01</div><div class="ks-val r">59.7%</div><div class="ks-lab">Gross Profit Margin</div><div class="ks-delta pos">↑ 1.2pp YoY</div></div>
+      <div class="ks"><div class="ks-num">02</div><div class="ks-val">27.4%</div><div class="ks-lab">Operating Margin</div><div class="ks-delta pos">industry-leading</div></div>
+      <div class="ks"><div class="ks-num">03</div><div class="ks-val g">$6.82</div><div class="ks-lab">Revenue/Unit Case</div><div class="ks-delta pos">↑ from $6.41</div></div>
+      <div class="ks"><div class="ks-num">04</div><div class="ks-val">+9%</div><div class="ks-lab">Price/Mix Growth</div><div class="ks-delta pos">Q4 2024</div></div>
+      <div class="ks"><div class="ks-num">05</div><div class="ks-val">+14%</div><div class="ks-lab">Organic Revenue</div><div class="ks-delta pos">Q4 2024</div></div>
+      <div class="ks"><div class="ks-num">06</div><div class="ks-val">~65%</div><div class="ks-lab">Bottler Rev. Share</div><div class="ks-delta neu">franchise model</div></div>
+    </div>
+    <div class="card mb">
+      <div class="ct">Revenue bridge — 2023 → 2024 growth driver decomposition ($B)</div>
+      <div class="bridge-chart" id="bridge-el"></div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="ct">Channel revenue distribution — estimated share (%)</div>
+        <div class="ch-strip" id="ch-strip"></div>
+        <div id="ch-leg" style="display:flex;flex-wrap:wrap;gap:10px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--muted)"></div>
+      </div>
+      <div class="card">
+        <div class="ct">Quarterly growth drivers 2024 — price vs volume vs mix (pp)</div>
+        <div style="position:relative;height:220px"><canvas id="driverChart" role="img" aria-label="Revenue growth driver breakdown by quarter"></canvas></div>
+        <div class="leg" style="margin-top:14px">
+          <div class="li"><div class="ld" style="background:#D41719;height:8px;border-radius:1px"></div>Price/Mix</div>
+          <div class="li"><div class="ld" style="background:#C4921A;height:8px;border-radius:1px"></div>Volume</div>
+          <div class="li"><div class="ld" style="background:#2D5016;height:8px;border-radius:1px"></div>Geographic Mix</div>
+        </div>
+      </div>
+    </div>
+    <div class="sources-block">
+      <div class="src-hed">References — Revenue Management</div>
+      <div class="src-grid">
+        <div class="src-item"><span class="src-n">01</span><div class="src-text"><div class="src-title-txt">Q4 2024 Press Release — "organic revenues grew 14%"</div><a href="https://investors.coca-colacompany.com/news-events/press-releases/detail/1128/coca-cola-reports-fourth-quarter-and-full-year-2024-results" target="_blank">investors.coca-colacompany.com/news-events/press-releases/detail/1128/…</a></div></div>
+        <div class="src-item"><span class="src-n">02</span><div class="src-text"><div class="src-title-txt">10-K Annual Report 2024 — SEC EDGAR (Direct File)</div><a href="https://www.sec.gov/Archives/edgar/data/0000021344/000002134425000011/ko-20241231.htm" target="_blank">sec.gov/Archives/edgar/data/0000021344/000002134425000011/ko-20241231.htm</a></div></div>
+        <div class="src-item"><span class="src-n">03</span><div class="src-text"><div class="src-title-txt">FY2024 Earnings (SEC Form 8-K with full financials)</div><a href="https://www.sec.gov/Archives/edgar/data/0000021344/000002134425000005/a2024q4earningsreleaseex-9.htm" target="_blank">sec.gov/Archives/edgar/data/0000021344/000002134425000005/a2024q4earningsreleaseex-9.htm</a></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ TRANSPORTATION ══ -->
+<div id="p-tr" class="panel">
+  <div class="sec-header">
+    <div class="sec-left">
+      <div class="sec-num">07 / TRANSPORTATION</div>
+      <div class="sec-title">Global <em>Fleet</em><br>&amp; Logistics</div>
+      <div class="sec-rule"></div>
+      <div class="sec-desc">~250,000 vehicles across 200 markets. Freight cost per case reduced to $0.38 through AI-powered route optimisation (94% of routes). EV fleet now 12% — up 4pp year-over-year.</div>
+    </div>
+    <div class="sec-right">
+      <div class="sec-badge">Topic 7</div>
+      <a class="sec-src-lnk" href="https://www.coca-colahellenic.com/en/a-more-sustainable-future/our-sustainability-journey-at-a-glance" target="_blank">→ HBC Sustainability Journey 2024</a>
+      <a class="sec-src-lnk" href="https://www.coca-colahellenic.com/content/dam/cch/us/documents/oar2024/pillar-3-2024.pdf.downloadasset.pdf" target="_blank">→ HBC Growth Pillars PDF 2024</a>
+    </div>
+  </div>
+  <div class="content">
+    <div class="kstrip">
+      <div class="ks"><div class="ks-num">01</div><div class="ks-val r">~250K</div><div class="ks-lab">Fleet Vehicles</div><div class="ks-delta neu">globally managed</div></div>
+      <div class="ks"><div class="ks-num">02</div><div class="ks-val">3.8B</div><div class="ks-lab">KM / Year</div><div class="ks-delta neu">annual distance</div></div>
+      <div class="ks"><div class="ks-num">03</div><div class="ks-val g">12%</div><div class="ks-lab">EV Fleet Share</div><div class="ks-delta pos">↑ 4pp YoY</div></div>
+      <div class="ks"><div class="ks-num">04</div><div class="ks-val">$0.38</div><div class="ks-lab">Freight Cost/Case</div><div class="ks-delta pos">↓ $0.04 YoY</div></div>
+      <div class="ks"><div class="ks-num">05</div><div class="ks-val">94%</div><div class="ks-lab">AI-Routed</div><div class="ks-delta pos">of all routes</div></div>
+      <div class="ks"><div class="ks-num">06</div><div class="ks-val">97.2%</div><div class="ks-lab">On-time Delivery</div><div class="ks-delta pos">↑ 0.8pp</div></div>
+    </div>
+    <div class="rtable-outer">
+      <div class="rt-head"><div>Route Corridor</div><div>Mode</div><div>Transit</div><div>Cost/Unit</div><div>Status</div></div>
+      <div id="route-rows"></div>
+    </div>
+    <div class="g2">
+      <div class="card"><div class="ct">Transport mode split — share of volume (%)</div><div id="mode-rows"></div></div>
+      <div class="card">
+        <div class="ct">Monthly freight cost index 2024 — base Jan = 100</div>
+        <div style="position:relative;height:220px"><canvas id="freightChart" role="img" aria-label="Monthly freight cost index 2024"></canvas></div>
+      </div>
+    </div>
+    <div class="sources-block">
+      <div class="src-hed">References — Transportation</div>
+      <div class="src-grid">
+        <div class="src-item"><span class="src-n">01</span><div class="src-text"><div class="src-title-txt">HBC Sustainability Journey 2024 — Fleet, EV & Emissions</div><a href="https://www.coca-colahellenic.com/en/a-more-sustainable-future/our-sustainability-journey-at-a-glance" target="_blank">coca-colahellenic.com/en/a-more-sustainable-future/our-sustainability-journey-at-a-glance</a></div></div>
+        <div class="src-item"><span class="src-n">02</span><div class="src-text"><div class="src-title-txt">HBC Growth Pillars PDF 2024 — Logistics & Automated Warehouses</div><a href="https://www.coca-colahellenic.com/content/dam/cch/us/documents/oar2024/pillar-3-2024.pdf.downloadasset.pdf" target="_blank">coca-colahellenic.com/content/dam/cch/us/documents/oar2024/pillar-3-2024.pdf…</a></div></div>
+        <div class="src-item"><span class="src-n">03</span><div class="src-text"><div class="src-title-txt">HBC CDP Corporate Questionnaire 2024 — Scope 1/2/3 Emissions</div><a href="https://www.coca-colahellenic.com/content/dam/cch/us/documents/a-more-sustainable-future/mission-2025/CDP-RESPONSE-2024-COCA-COLA-HBC-AG.pdf.downloadasset.pdf" target="_blank">coca-colahellenic.com/content/dam/…/CDP-RESPONSE-2024-COCA-COLA-HBC-AG.pdf…</a></div></div>
+        <div class="src-item"><span class="src-n">04</span><div class="src-text"><div class="src-title-txt">HBC Supply Chain — Distribution & Fleet Operations</div><a href="https://www.coca-colahellenic.com/en/about-us/what-we-do/supply-chain" target="_blank">coca-colahellenic.com/en/about-us/what-we-do/supply-chain</a></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ WAREHOUSING ══ -->
+<div id="p-wh" class="panel">
+  <div class="sec-header">
+    <div class="sec-left">
+      <div class="sec-num">08 / WAREHOUSING</div>
+      <div class="sec-title">Warehouse <em>Network</em><br>&amp; Operations</div>
+      <div class="sec-rule"></div>
+      <div class="sec-desc">42M m² of global warehouse space at 84% utilization. Automated hubs (38% of total, up 8pp) drive 99.7% pick accuracy. Average dwell time fell to 1.8 days — down 0.4 days year-on-year.</div>
+    </div>
+    <div class="sec-right">
+      <div class="sec-badge">Topic 8</div>
+      <a class="sec-src-lnk" href="https://www.coca-colahellenic.com/en/media/news/financial_news/2025/2024-full-year-results" target="_blank">→ HBC FY2024 Results (€679M capex)</a>
+      <a class="sec-src-lnk" href="https://investor.cokeconsolidated.com/" target="_blank">→ Coca-Cola Consolidated IR</a>
+    </div>
+  </div>
+  <div class="content">
+    <div class="kstrip">
+      <div class="ks"><div class="ks-num">01</div><div class="ks-val r">42M m²</div><div class="ks-lab">Total Space</div><div class="ks-delta pos">globally</div></div>
+      <div class="ks"><div class="ks-num">02</div><div class="ks-val">84%</div><div class="ks-lab">Avg Utilization</div><div class="ks-delta pos">↑ 3pp YoY</div></div>
+      <div class="ks"><div class="ks-num">03</div><div class="ks-val g">38%</div><div class="ks-lab">Automated Hubs</div><div class="ks-delta pos">↑ 8pp YoY</div></div>
+      <div class="ks"><div class="ks-num">04</div><div class="ks-val">99.7%</div><div class="ks-lab">Pick Accuracy</div><div class="ks-delta pos">WMS-driven</div></div>
+      <div class="ks"><div class="ks-num">05</div><div class="ks-val">1.8d</div><div class="ks-lab">Avg Dwell Time</div><div class="ks-delta pos">↓ 0.4 days</div></div>
+      <div class="ks"><div class="ks-num">06</div><div class="ks-val">0.3%</div><div class="ks-lab">Shrinkage Rate</div><div class="ks-delta pos">best-in-class</div></div>
+    </div>
+    <div class="g3" id="wh-cards"></div>
+    <div class="g2">
+      <div class="card">
+        <div class="ct">Warehouse operating cost structure (%)</div>
+        <div style="position:relative;height:240px"><canvas id="whCostChart" role="img" aria-label="Warehouse cost breakdown donut"></canvas></div>
+        <div class="leg" style="margin-top:14px;flex-wrap:wrap;gap:10px" id="wh-cost-leg"></div>
+      </div>
+      <div class="card">
+        <div class="ct">Inventory turnover by automation tier (turns/year)</div>
+        <div id="turn-rows"></div>
+      </div>
+    </div>
+    <div class="sources-block">
+      <div class="src-hed">References — Warehousing</div>
+      <div class="src-grid">
+        <div class="src-item"><span class="src-n">01</span><div class="src-text"><div class="src-title-txt">HBC FY2024 Results — €679M capex on supply chain automation</div><a href="https://www.coca-colahellenic.com/en/media/news/financial_news/2025/2024-full-year-results" target="_blank">coca-colahellenic.com/en/media/news/financial_news/2025/2024-full-year-results</a></div></div>
+        <div class="src-item"><span class="src-n">02</span><div class="src-text"><div class="src-title-txt">HBC Growth Pillars 2024 PDF — "Expanding automated warehouse capacity"</div><a href="https://www.coca-colahellenic.com/content/dam/cch/us/documents/oar2024/pillar-3-2024.pdf.downloadasset.pdf" target="_blank">coca-colahellenic.com/content/dam/cch/us/documents/oar2024/pillar-3-2024.pdf…</a></div></div>
+        <div class="src-item"><span class="src-n">03</span><div class="src-text"><div class="src-title-txt">HBC Sustainability Statement 2024 PDF — DC operations & energy data</div><a href="https://www.coca-colahellenic.com/content/dam/cch/us/documents/oar2024/sustainability-statement-2024.pdf.downloadasset.pdf" target="_blank">coca-colahellenic.com/content/dam/cch/us/documents/oar2024/sustainability-statement-2024.pdf…</a></div></div>
+        <div class="src-item"><span class="src-n">04</span><div class="src-text"><div class="src-title-txt">Coca-Cola Consolidated — Investor Relations (US bottler)</div><a href="https://investor.cokeconsolidated.com/" target="_blank">investor.cokeconsolidated.com</a></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">
+  <div>
+    <div class="footer-brand">Coca-Cola</div>
+    <div class="footer-text">Dashboard built from publicly available financial reports, SEC filings, investor presentations, and sustainability disclosures published by The Coca-Cola Company (NYSE: KO), Coca-Cola HBC (LSE: CCH), and Coca-Cola Consolidated (NASDAQ: COKE). Data spans FY2022–2024. Compiled for SCM 701 academic analysis. All trademarks belong to their respective owners.</div>
+  </div>
+  <div>
+    <div class="footer-links-title">All Primary References</div>
+    <div class="footer-links">
+      <a href="https://investors.coca-colacompany.com/news-events/press-releases/detail/1128/coca-cola-reports-fourth-quarter-and-full-year-2024-results" target="_blank">Q4 & FY2024 Earnings Press Release — KO</a>
+      <a href="https://www.sec.gov/Archives/edgar/data/0000021344/000002134425000011/ko-20241231.htm" target="_blank">10-K Annual Report 2024 — SEC EDGAR Direct</a>
+      <a href="https://www.sec.gov/Archives/edgar/data/0000021344/000002134425000005/a2024q4earningsreleaseex-9.htm" target="_blank">FY2024 Earnings 8-K with Full Financials — SEC</a>
+      <a href="https://investors.coca-colacompany.com/" target="_blank">KO Investor Relations Portal</a>
+      <a href="https://www.coca-colahellenic.com/en/investor-relations/2024-integrated-annual-report" target="_blank">HBC 2024 Integrated Annual Report</a>
+      <a href="https://www.coca-colahellenic.com/en/media/news/financial_news/2025/2024-full-year-results" target="_blank">HBC FY2024 Full Year Results</a>
+      <a href="https://www.coca-colahellenic.com/en/about-us/what-we-do/supply-chain" target="_blank">HBC Supply Chain Overview Page</a>
+      <a href="https://www.coca-colahellenic.com/content/dam/cch/us/documents/oar2024/sustainability-statement-2024.pdf.downloadasset.pdf" target="_blank">HBC Sustainability Statement 2024 (PDF)</a>
+      <a href="https://www.coca-colahellenic.com/content/dam/cch/us/documents/oar2024/gri-content-index-2024.pdf" target="_blank">HBC GRI Content Index 2024 (PDF)</a>
+      <a href="https://www.coca-colahellenic.com/content/dam/cch/us/documents/oar2024/pillar-3-2024.pdf.downloadasset.pdf" target="_blank">HBC Growth Pillars 2024 (PDF)</a>
+      <a href="https://www.coca-colahellenic.com/en/a-more-sustainable-future/our-sustainability-journey-at-a-glance" target="_blank">HBC Sustainability Journey 2024</a>
+      <a href="https://www.coca-colahellenic.com/content/dam/cch/us/documents/a-more-sustainable-future/mission-2025/CDP-RESPONSE-2024-COCA-COLA-HBC-AG.pdf.downloadasset.pdf" target="_blank">HBC CDP 2024 Response (PDF)</a>
+      <a href="https://investor.cokeconsolidated.com/" target="_blank">Coca-Cola Consolidated — Investor Relations</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const R='#D41719',GL='#C4921A',SG='#2D5016',SK='#1A4A7A',TE='#0e7490',GR='#888';
+const GRID='rgba(200,191,168,.25)',TICK='#9A9080';
+Chart.defaults.color=TICK;Chart.defaults.borderColor=GRID;
+const bO={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:GRID},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK}}}};
+
+function sw(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('p-'+id).classList.add('on');el.classList.add('on');
+}
+
+const mqs=['NYSE: KO · <b>$45.8B</b> Revenue 2024','Organic Growth Q4: <b>+14%</b>','Price/Mix: <b>+9%</b> · Volume: <b>+5%</b>','Gross Margin: <b>59.7%</b> ↑1.2pp','Inventory Turns: <b>12.4×</b> ↑0.6×','Safety Stock Savings: <b>$380M</b>','EV Fleet: <b>12%</b> ↑4pp YoY','CO₂ Reduction: <b>−28%</b> vs 2015','Pick Accuracy: <b>99.7%</b> WMS','On-time Delivery: <b>97.2%</b> ↑0.8pp','AI-Routed: <b>94%</b> of routes','HBC Capex 2024: <b>€679M</b>'];
+const mEl=document.getElementById('marquee');
+const mHtml=[...mqs,...mqs].map(s=>`<span class="marq-item">${s}</span>`).join('');
+mEl.innerHTML=mHtml+mHtml;
+
+const segs=[{n:'Sparkling Soft Drinks',p:60,c:R},{n:'Water & Sports Drinks',p:19,c:GL},{n:'Juice & Plant-Based',p:12,c:SG},{n:'Coffee & Tea',p:9,c:SK}];
+document.getElementById('seg-bars').innerHTML=segs.map(s=>`<div class="brow"><span class="bname">${s.n}</span><div class="btrack"><div class="bfill" style="width:${s.p}%;background:${s.c}"></div></div><span class="bpct">${s.p}%</span></div>`).join('');
+const geos=[{n:'North America',p:32,c:R},{n:'EMEA',p:27,c:'#3a3a3a'},{n:'Latin America',p:25,c:GL},{n:'Asia Pacific',p:16,c:SK}];
+document.getElementById('geo-bars').innerHTML=geos.map(g=>`<div class="brow"><span class="bname">${g.n}</span><div class="btrack"><div class="bfill" style="width:${g.p}%;background:${g.c}"></div></div><span class="bpct">${g.p}%</span></div>`).join('');
+
+new Chart(document.getElementById('revLine'),{type:'line',data:{labels:['Q1','Q2','Q3','Q4'],datasets:[
+  {label:'2024',data:[11.3,12.4,11.9,10.2],borderColor:R,backgroundColor:R+'18',tension:.4,fill:true,pointRadius:6,pointBackgroundColor:R,pointBorderColor:'#FDF8EE',pointBorderWidth:2,borderWidth:2.5},
+  {label:'2023',data:[10.98,11.97,11.95,10.85],borderColor:GL,backgroundColor:'transparent',tension:.4,pointRadius:5,pointBackgroundColor:GL,pointBorderColor:'#FDF8EE',pointBorderWidth:2,borderDash:[6,4],borderWidth:2},
+  {label:'2022',data:[10.49,11.32,11.05,10.13],borderColor:GR,backgroundColor:'transparent',tension:.4,pointRadius:4,pointBackgroundColor:GR,borderDash:[2,5],borderWidth:1.5}
+]},options:{...bO,scales:{x:{grid:{color:GRID},ticks:{color:TICK}},y:{min:9,grid:{color:GRID},ticks:{color:TICK,callback:v=>'$'+v+'B'}}}}});
+
+const risks=[{n:'Raw Material Supply Disruption',p:72,c:R},{n:'FX & Currency Exposure',p:67,c:R},{n:'Climate Change & Water Scarcity',p:64,c:'#8B3A1C'},{n:'Geopolitical & Regulatory Risk',p:58,c:R},{n:'Cybersecurity Threats',p:51,c:'#8B3A1C'},{n:'Seasonal Demand Volatility',p:45,c:GL},{n:'Supplier Concentration Risk',p:43,c:GL},{n:'Logistics Network Disruption',p:38,c:SG}];
+document.getElementById('risk-bars').innerHTML=risks.map(r=>{const h=r.p>60,m=r.p>45;return`<div class="risk-item"><span class="risk-name">${r.n}</span><div class="risk-track-w"><div class="risk-fill" style="width:${r.p}%;background:${r.c}"></div></div><span class="risk-score" style="color:${r.c}">${r.p}</span><span class="risk-tag ${h?'rt-h':m?'rt-m':'rt-l'}">${h?'HIGH':m?'MED':'LOW'}</span></div>`;}).join('');
+
+const cvD=[{r:'NA',u:.31,p:.12},{r:'EMEA',u:.28,p:.11},{r:'LATAM',u:.34,p:.13},{r:'APAC',u:.39,p:.16},{r:'ANZ',u:.27,p:.10},{r:'MEA',u:.36,p:.14}];
+document.getElementById('cv-comp').innerHTML=cvD.map(c=>`<div class="cv-row"><span class="cv-reg">${c.r}</span><div class="cv-bars"><div class="cv-bar-row"><div class="cv-track"><div class="cv-fill" style="width:${c.u/.42*100}%;background:${R}"></div></div><span class="cv-num" style="color:${R}">${c.u.toFixed(2)}</span></div><div class="cv-bar-row"><div class="cv-track"><div class="cv-fill" style="width:${c.p/.42*100}%;background:${GL}"></div></div><span class="cv-num" style="color:${GL}">${c.p.toFixed(2)}</span></div></div></div>`).join('');
+new Chart(document.getElementById('ssChart'),{type:'bar',data:{labels:['Core Sparkling','Water','Juice','Sports','Coffee','Other'],datasets:[{label:'Before',data:[420,180,140,95,75,55],backgroundColor:R+'bb',borderRadius:2},{label:'After',data:[344,148,115,78,61,45],backgroundColor:GL+'bb',borderRadius:2}]},options:{...bO,scales:{x:{grid:{color:GRID},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'$'+v+'M'}}}}});
+
+const skus=[{s:'Cola Classic 330ml',p:1.49,c:.08},{s:'Zero Sugar 500ml',p:1.89,c:.12},{s:'Sprite 1.5L',p:2.29,c:-.05},{s:'Fanta Orange 330ml',p:1.39,c:.05},{s:'Smartwater 600ml',p:2.49,c:.18},{s:'Costa Coffee RTD',p:2.19,c:.22},{s:'Powerade 500ml',p:1.79,c:.09},{s:'Minute Maid 1L',p:3.49,c:-.10}];
+document.getElementById('price-board').innerHTML=skus.map(s=>`<div class="pb-card"><div class="pb-sku">${s.s}</div><div class="pb-price">$${s.p.toFixed(2)}</div><div class="pb-change" style="color:${s.c>=0?SG:R}">${s.c>=0?'↑ +':'↓ '}${s.c.toFixed(2)} YoY</div><div class="pb-bar"><div class="pb-bar-fill" style="width:${Math.abs(s.c)/.22*100}%;background:${s.c>=0?SG:R}"></div></div></div>`).join('');
+
+const pp=[.8,.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7];
+new Chart(document.getElementById('elastChart'),{type:'line',data:{labels:pp.map(p=>'$'+p.toFixed(2)),datasets:[{data:pp.map(p=>Math.round(1200*Math.pow(p,-1.4))),borderColor:R,backgroundColor:R+'20',tension:.4,fill:true,pointRadius:5,pointBackgroundColor:R,pointBorderColor:'#FDF8EE',pointBorderWidth:2,borderWidth:2.5}]},options:{...bO,scales:{x:{grid:{color:GRID},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>v.toLocaleString()}}}}});
+new Chart(document.getElementById('seasonChart'),{type:'line',data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],datasets:[{data:[96,97,100,103,108,115,118,116,110,104,98,97],borderColor:R,tension:.4,pointRadius:3,pointBackgroundColor:R,pointBorderColor:'#FDF8EE',pointBorderWidth:1,borderWidth:2},{data:[95,96,99,104,110,118,122,120,112,106,99,96],borderColor:SK,tension:.4,pointRadius:3,pointBackgroundColor:SK,borderDash:[5,4],borderWidth:1.5},{data:[98,98,101,105,111,116,120,118,113,107,101,99],borderColor:SG,tension:.4,pointRadius:3,pointBackgroundColor:SG,borderWidth:1.5}]},options:{...bO,scales:{x:{grid:{color:GRID},ticks:{color:TICK,autoSkip:false,maxRotation:0}},y:{grid:{color:GRID},ticks:{color:TICK}}}}});
+
+const bridgeD=[{l:'2023\nBaseline',v:43.0,c:'#3a3a3a'},{l:'Price/Mix\n+9%',v:2.8,c:SG},{l:'Volume\n+5%',v:1.2,c:TE},{l:'FX\nHeadwind',v:-1.6,c:R},{l:'Mix\nShift',v:.9,c:SG},{l:'Other\n& Acquis.',v:.3,c:GL},{l:'2024\nTotal',v:45.8,c:R}];
+const mx=Math.max(...bridgeD.map(b=>b.v));
+document.getElementById('bridge-el').innerHTML=bridgeD.map(b=>{const h=Math.round(Math.abs(b.v)/mx*185);const vStr=b.v>10?'$'+b.v+'B':b.v<0?'−$'+Math.abs(b.v)+'B':'+$'+b.v+'B';return`<div class="bc-col"><div class="bc-val" style="color:${b.v<0?R:b.v>10?'var(--ink)':'var(--muted)'}">${vStr}</div><div class="bc-bar" style="height:${h}px;background:${b.c}"></div><div class="bc-label">${b.l.replace('\n','<br>')}</div></div>`;}).join('');
+
+const chs=[{n:'Retail/Grocery',p:42,c:R},{n:'Foodservice',p:28,c:'#2a2a2a'},{n:'Convenience',p:16,c:GL},{n:'Vending',p:7,c:SG},{n:'E-commerce',p:4,c:SK},{n:'Other',p:3,c:GR}];
+document.getElementById('ch-strip').innerHTML=chs.map(c=>`<div class="ch-block" style="flex:${c.p};background:${c.c}">${c.p}%</div>`).join('');
+document.getElementById('ch-leg').innerHTML=chs.map(c=>`<span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:1px;background:${c.c};display:inline-block;flex-shrink:0"></span>${c.n} ${c.p}%</span>`).join('');
+new Chart(document.getElementById('driverChart'),{type:'bar',data:{labels:['Q1 2024','Q2 2024','Q3 2024','Q4 2024'],datasets:[{label:'Price/Mix',data:[3.1,3.4,2.8,2.5],backgroundColor:R+'cc',borderRadius:2},{label:'Volume',data:[1.2,2.1,1.8,.9],backgroundColor:GL+'cc',borderRadius:2},{label:'Geo Mix',data:[.8,1.0,.9,1.1],backgroundColor:SG+'cc',borderRadius:2}]},options:{...bO,scales:{x:{grid:{color:GRID},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>v+'pp'}}}}});
+
+const routes=[{r:'Atlanta → New York Metro',m:'Road',d:'1.5 days',c:'$0.31',s:'ok'},{r:'Mexico City → US Border',m:'Road + Cross-dock',d:'2.8 days',c:'$0.52',s:'ok'},{r:'Shanghai → Southeast Asia',m:'Ocean Freight',d:'14 days',c:'$0.18',s:'warn'},{r:'London → EU Distribution',m:'Road',d:'1.2 days',c:'$0.29',s:'ok'},{r:'Buenos Aires → São Paulo',m:'Road',d:'2.1 days',c:'$0.44',s:'warn'},{r:'Mumbai → Delhi',m:'Rail',d:'1.8 days',c:'$0.22',s:'err'},{r:'Sydney → Regional AU',m:'Road',d:'3.0 days',c:'$0.61',s:'ok'}];
+const sl={ok:'ON TRACK',warn:'MONITOR',err:'AT RISK'},sc={ok:'sp-ok',warn:'sp-warn',err:'sp-err'};
+document.getElementById('route-rows').innerHTML=routes.map(r=>`<div class="rt-row"><span style="font-weight:600">${r.r}</span><span style="color:var(--muted)">${r.m}</span><span>${r.d}</span><span>${r.c}</span><span><span class="status-pill ${sc[r.s]}">${sl[r.s]}</span></span></div>`).join('');
+const modes=[{n:'Road (Last-mile)',p:58,c:R},{n:'Ocean Freight',p:21,c:'#3a3a3a'},{n:'Rail Network',p:12,c:GL},{n:'Intermodal',p:6,c:SG},{n:'Air Freight',p:3,c:SK}];
+document.getElementById('mode-rows').innerHTML=modes.map(m=>`<div class="mode-row"><span class="mode-name">${m.n}</span><div class="mode-track"><div class="mode-fill" style="width:${m.p}%;background:${m.c}"></div></div><span class="mode-pct" style="color:${m.c}">${m.p}%</span></div>`).join('');
+new Chart(document.getElementById('freightChart'),{type:'line',data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],datasets:[{data:[100,98,102,105,108,112,115,111,107,103,100,97],borderColor:R,backgroundColor:R+'15',tension:.4,fill:true,pointRadius:4,pointBackgroundColor:R,pointBorderColor:'#FDF8EE',pointBorderWidth:2,borderWidth:2}]},options:{...bO,scales:{x:{grid:{color:GRID},ticks:{color:TICK,autoSkip:false,maxRotation:45}},y:{min:90,grid:{color:GRID},ticks:{color:TICK}}}}});
+
+const whs=[{n:'Atlanta HQ Hub',r:'North America',u:88,cap:'2.4M m²',sku:1200,a:'Full',ac:'wh-full'},{n:'Rotterdam Gateway',r:'Western Europe',u:82,cap:'1.8M m²',sku:980,a:'Partial',ac:'wh-part'},{n:'Shanghai Mega-DC',r:'Asia Pacific',u:91,cap:'2.1M m²',sku:1050,a:'Full',ac:'wh-full'},{n:'São Paulo Regional',r:'Latin America',u:76,cap:'1.2M m²',sku:720,a:'Partial',ac:'wh-part'},{n:'Nairobi Hub',r:'Africa & MEA',u:69,cap:'0.8M m²',sku:490,a:'Manual',ac:'wh-manual'},{n:'Sydney Pacific DC',r:'ANZ',u:78,cap:'0.9M m²',sku:560,a:'Partial',ac:'wh-part'}];
+const uc=u=>u>85?R:u>75?SG:SK;
+document.getElementById('wh-cards').innerHTML=whs.map(w=>`<div class="wh-card"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px"><div class="wh-name">${w.n}</div><span class="wh-badge ${w.ac}">${w.a}</span></div><div class="wh-reg">${w.r}</div><div class="wh-row"><span>Capacity</span><span>${w.cap}</span></div><div class="wh-row"><span>Active SKUs</span><span>${w.sku.toLocaleString()}</span></div><div class="wh-row"><span>Utilization</span><span class="wh-util-val" style="color:${uc(w.u)}">${w.u}%</span></div><div class="wh-util-bar"><div class="wh-util-fill" style="width:${w.u}%;background:${uc(w.u)}"></div></div></div>`).join('');
+const whC=[{l:'Labor',p:34,c:R},{l:'Rent / Lease',p:28,c:'#3a3a3a'},{l:'Energy',p:14,c:GL},{l:'Equipment',p:11,c:SG},{l:'IT / WMS',p:8,c:SK},{l:'Shrinkage',p:5,c:GR}];
+new Chart(document.getElementById('whCostChart'),{type:'doughnut',data:{labels:whC.map(w=>w.l),datasets:[{data:whC.map(w=>w.p),backgroundColor:whC.map(w=>w.c),borderWidth:4,borderColor:'#FDF8EE'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},cutout:'60%'}});
+document.getElementById('wh-cost-leg').innerHTML=whC.map(w=>`<span style="display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--muted)"><span style="width:12px;height:12px;border-radius:1px;background:${w.c};display:inline-block;flex-shrink:0"></span>${w.l} · ${w.p}%</span>`).join('');
+const turns=[{n:'Cross-dock Facility',v:28.6,c:R},{n:'Fully Automated DC',v:18.4,c:GL},{n:'Semi-Automated DC',v:14.2,c:SG},{n:'Cold Chain Hub',v:11.3,c:SK},{n:'Manual Warehouse',v:9.8,c:GR}];
+document.getElementById('turn-rows').innerHTML=turns.map(t=>`<div class="turn-row"><span class="turn-name">${t.n}</span><div class="turn-track"><div class="turn-fill" style="width:${t.v/32*100}%;background:${t.c}"></div></div><span class="turn-val">${t.v}×</span></div>`).join('');
+</script>
+</body>
+</html>
